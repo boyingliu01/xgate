@@ -6,8 +6,7 @@ AI-powered development workflow tools with consensus engines and quality gates f
 
 - **XP Consensus Engine** - Driver + Navigator + Arbiter decision workflow using Delphi method
 - **Sprint Flow** - One-Shot Sprint 自动流水线 (Think → Plan → Build → Review → Ship)
-- **Code Walkthrough** - Multi-expert post-commit code review before push
-- **Delphi Review** - MANDATORY consensus review before any implementation/design decisions
+- **Delphi Review** - MANDATORY consensus review before any implementation/design decisions (supports design and code-walkthrough modes)
 - **Test-Specification Alignment** - Two-phase verification ensuring tests match requirements
 - **Principles Checker** - Clean Code (9) + SOLID (5) rules with 9 language adapters
 - **Boy Scout Rule** - Differential warning enforcement for historical projects
@@ -81,11 +80,9 @@ git push    # Runs pre-push (multi-expert Delphi review)
 # XP consensus workflow
 /xp-consensus
 
-# Code walkthrough
-/code-walkthrough
-
-# Delphi review
-/delphi-review
+# Delphi review (supports design and code-walkthrough modes)
+/delphi-review              # Design mode (default)
+/code-walkthrough          # Code walkthrough mode (equivalent to /delphi-review --mode code-walkthrough)
 
 # Test-specification alignment
 /test-specification-alignment
@@ -193,8 +190,7 @@ skills/
 │       ├── emergent-issues-template.md
 │       └── sprint-summary-template.md
 ├── xp-consensus/SKILL.md        # Driver-Navigator-Arbiter workflow
-├── code-walkthrough/SKILL.md    # Multi-expert Delphi review
-├── delphi-review/SKILL.md       # MANDATORY before implementation
+├── delphi-review/SKILL.md       # MANDATORY before implementation (supports design/code-walkthrough dual modes)
 ├── test-specification-alignment/SKILL.md  # Two-phase verification
 └── code-reviewer/SKILL.md       # Static analysis + SARIF
 ```
