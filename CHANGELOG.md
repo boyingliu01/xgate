@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1.0] - 2026-05-25
+
+### Added
+- **Windows 支持** — 新增环境要求文档，Git for Windows (Git Bash) 为必需依赖
+- **.gitattributes** — 控制行尾（.sh 强制 LF），保证跨平台一致性
+- **Windows 工具安装指南** — 在 TOOL-INSTALLATION-GUIDE.md 中增加 winget/choco/pip 安装命令
+
+### Changed
+- **跨平台兼容** — 将 `process.env.HOME` 替换为 `os.homedir()`，覆盖全部 npm lib 文件（7 个文件）
+- **CRLF 归一化** — 文件读取入口统一加 `.replace(/\r\n/g, '\n')`，保护 principle adapter 和 mutation 模块
+- **跨平台进程终止** — `SIGTERM`/`SIGKILL` 改为跨平台方案（POSIX 用信号，Windows 用 `taskkill`）
+- **圈复杂度优化** — 提取 `init.js` 和 `update-skill.js` 中的内部函数，CCN 降至阈值以下
+
+### Fixed
+- Windows 下 `process.env.HOME` 不可用导致的脚本崩溃
+- CRLF 文件上 `split('\n')` 残留 `\r` 导致的错误解析
+- Windows Node.js 不支持 SIGTERM/SIGKILL 导致的进程无法终止
+
 ## [0.2.0] - 2026-05-21
 
 ### Added
