@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.1.0] - 2026-05-25
+## [0.3.0.0] - 2026-05-25
 
 ### Added
 - **Windows 支持** — 新增环境要求文档，Git for Windows (Git Bash) 为必需依赖
@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file.
 - CRLF 文件上 `split('\n')` 残留 `\r` 导致的错误解析
 - Windows Node.js 不支持 SIGTERM/SIGKILL 导致的进程无法终止
 
-## [0.2.0] - 2026-05-21
+## [0.2.0.0] - 2026-05-21
 
 ### Added
 - **`/to-issues` skill** — 垂直切片问题拆分，Delphi Round 2 APPROVED (3/3)
