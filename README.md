@@ -74,9 +74,16 @@ THINK → PLAN → BUILD → REVIEW → USER ACCEPT → FEEDBACK → SHIP
 
 ---
 
-## 快速开始
+## 环境要求
 
-### 方式零：零安装（推荐 — AI Agent 友好）
+| 平台 | 要求 |
+|------|------|
+| **Linux / macOS** | 标准环境，确保安装了对应编程语言的静态分析工具即可 |
+| **Windows** | 需要 **Git for Windows**（含 **Git Bash**）。所有质量门禁和安装脚本都使用 Bash 编写，Windows 下必须通过 Git Bash 执行。安装方式：在 [Git for Windows 官网](https://gitforwindows.org/) 下载安装，确保安装时勾选 "Git Bash" 组件。其他工具（Node.js、Python 等）可使用 `winget` / `choco` 安装。 |
+
+> 💡 **WSL 用户**: xp-gate 最初在 WSL 环境下开发，通过 WSL 使用可获得最佳兼容性。
+
+## 快速开始
 
 ```bash
 # npm 全局安装（无需 clone 仓库）

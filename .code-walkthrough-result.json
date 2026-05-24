@@ -1,8 +1,8 @@
 {
-  "commit": "655a15b380815e31954ecb26ad7e5c8c7a80b133",
-  "branch": "sprint/2026-05-24-01",
-  "timestamp": "2026-05-24T12:00:00Z",
-  "expires": "2026-05-24T13:00:00Z",
+  "commit": "7074442f09b1a329c483340e6470433d3e702cf8",
+  "branch": "feat/windows-compat",
+  "timestamp": "2026-05-24T23:30:00Z",
+  "expires": "2026-05-25T23:30:00Z",
   "verdict": "APPROVED",
   "confidence": 9,
   "experts": [
@@ -11,8 +11,8 @@
   ],
   "issues": [],
   "consensus_ratio": 1.0,
-  "files_reviewed": 1,
-  "lines_added": 132,
-  "lines_deleted": 17,
-  "review_description": "Phase -1 ISOLATE: git worktree isolation for sprint-flow"
+  "files_reviewed": 13,
+  "lines_added": 166,
+  "lines_deleted": 72,
+  "review_description": "Windows compatibility: process.env.HOME→os.homedir(), CRLF normalization, cross-platform kill, docs"
 }

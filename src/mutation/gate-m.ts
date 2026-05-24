@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { spawn } from 'child_process';
+import { spawn, execSync } from 'child_process';
 import {
   GateMOptions,
   GateMResult,
@@ -139,7 +139,7 @@ async function checkTestIntents(
 
 async function loadCriticalPaths(configPath: string): Promise<string[]> {
   try {
-    const content = await fs.readFile(configPath, 'utf-8');
+    const content = (await fs.readFile(configPath, 'utf-8')).replace(/\r\n/g, '\n');
     return content
       .split('\n')
       .map(line => line.trim())
@@ -259,10 +259,16 @@ function runStryker(
     });
 
     const timeoutId = setTimeout(() => {
-      child.kill('SIGTERM');
+      // Cross-platform kill: SIGTERM on POSIX, terminate on Windows
+      child.kill();
       setTimeout(() => {
         if (!child.killed) {
-          child.kill('SIGKILL');
+          if (process.platform === 'win32') {
+            // Windows: use taskkill for force termination
+            try { execSync(`taskkill /pid ${child.pid} /f`, { stdio: 'ignore' }); } catch { /* ignore */ }
+          } else {
+            child.kill('SIGKILL');
+          }
         }
       }, 5000);
     }, timeoutMs);

@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
-const SKILLS_DIR = path.join(process.env.HOME, '.config', 'opencode', 'skills');
-const OPENCODE_DIR = path.join(process.env.HOME, '.config', 'opencode');
+const SKILLS_DIR = path.join(os.homedir(), '.config', 'opencode', 'skills');
+const OPENCODE_DIR = path.join(os.homedir(), '.config', 'opencode');
 
 const REQUIRED_DEPS = [
   { name: 'superpowers', minVersion: '1.0.0' },
