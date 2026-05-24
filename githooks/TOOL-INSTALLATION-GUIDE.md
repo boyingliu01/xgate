@@ -7,6 +7,35 @@
 
 ---
 
+## Windows 环境说明
+
+质量门禁使用 Bash 脚本编写，Windows 下需要 **Git for Windows**（含 Git Bash）来执行。
+
+### Windows 工具安装方式
+
+Windows 下推荐使用以下方式安装所需工具：
+
+| 工具 | 安装命令 |
+|------|---------|
+| **Git for Windows** | [gitforwindows.org](https://gitforwindows.org/) 下载安装，必须勾选 "Git Bash" 组件 |
+| **Node.js** | `winget install OpenJS.NodeJS` 或 [nodejs.org](https://nodejs.org/) |
+| **Python** | `winget install Python.Python.3.12` 或 [python.org](https://python.org/) |
+| **jq** | `winget install jq` 或 `choco install jq` |
+| **lizard**（圈复杂度） | `pip install lizard` |
+| **semgrep**（SAST 扫描） | `pip install semgrep` |
+| **gitleaks**（密钥扫描） | `winget install gitleaks` 或 `choco install gitleaks` |
+| **shellcheck** | `choco install shellcheck` |
+| **Ruff**（Python 检查） | `pip install ruff` |
+| **checkov**（IaC 扫描） | `pip install checkov` |
+| **golangci-lint** | `winget install golangci-lint` |
+
+> **重要**：安装以上工具后，确保它们所在的目录已添加到系统 `PATH` 环境变量中，否则 Git Bash 可能找不到这些命令。
+
+---
+
+
+---
+
 ## 按语言栈的完整工具列表
 
 ### TypeScript/JavaScript 项目

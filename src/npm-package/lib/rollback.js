@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
-const CONFIG_DIR = path.join(process.env.HOME, '.config', 'xp-gate');
+const CONFIG_DIR = path.join(os.homedir(), '.config', 'xp-gate');
 const BACKUP_DIR = path.join(CONFIG_DIR, 'backup');
 
 async function rollback(installId) {
@@ -16,7 +17,7 @@ async function rollback(installId) {
   const entries = fs.readdirSync(backupDir);
   for (const entry of entries) {
     const src = path.join(backupDir, entry);
-    const dest = path.join(process.env.HOME, '.config', 'opencode', 'skills', entry);
+    const dest = path.join(os.homedir(), '.config', 'opencode', 'skills', entry);
     
     if (fs.existsSync(src)) {
       if (fs.existsSync(dest)) {
@@ -33,7 +34,7 @@ async function rollback(installId) {
 
 async function createBackup(installId, skillName) {
   const backupDir = path.join(BACKUP_DIR, installId);
-  const targetDir = path.join(process.env.HOME, '.config', 'opencode', 'skills', skillName);
+  const targetDir = path.join(os.homedir(), '.config', 'opencode', 'skills', skillName);
   
   if (!fs.existsSync(targetDir)) {
     return null;

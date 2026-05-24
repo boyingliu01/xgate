@@ -1,41 +1,19 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
-const CONFIG_DIR = path.join(process.env.HOME, '.config', 'xp-gate');
-const SKILLS_DIR = path.join(process.env.HOME, '.config', 'opencode', 'skills');
+const CONFIG_DIR = path.join(os.homedir(), '.config', 'xp-gate');
+const SKILLS_DIR = path.join(os.homedir(), '.config', 'opencode', 'skills');
 
 async function updateSkill(name, options = {}) {
   const { all = false, check = false, verbose = false } = options;
   
   if (check) {
-    console.log('Checking for updates...');
-    const config = getConfig();
-    const skills = config.installedSkills || {};
-    
-    for (const [skillName, info] of Object.entries(skills)) {
-      console.log(`  ${skillName}: ${info.version || 'unknown'}`);
-    }
-    console.log('Update check complete');
-    return 0;
+    return runCheck();
   }
   
   if (all) {
-    const config = getConfig();
-    const skills = config.installedSkills || {};
-    
-    console.log('Updating all skills...');
-    let hasErrors = false;
-    
-    for (const skillName of Object.keys(skills)) {
-      try {
-        await updateSingleSkill(skillName, verbose);
-      } catch (err) {
-        console.error(`Failed to update ${skillName}: ${err.message}`);
-        hasErrors = true;
-      }
-    }
-    
-    return hasErrors ? 1 : 0;
+    return runUpdateAll(verbose);
   }
   
   if (!name) {
@@ -46,13 +24,39 @@ async function updateSkill(name, options = {}) {
   
   const config = getConfig();
   const skills = config.installedSkills || {};
-  
   if (!skills[name]) {
     console.error(`Error: ${name} is not installed`);
     return 1;
   }
   
   return updateSingleSkill(name, verbose);
+}
+
+function runCheck() {
+  console.log('Checking for updates...');
+  const config = getConfig();
+  const skills = config.installedSkills || {};
+  for (const [skillName, info] of Object.entries(skills)) {
+    console.log(`  ${skillName}: ${info.version || 'unknown'}`);
+  }
+  console.log('Update check complete');
+  return 0;
+}
+
+async function runUpdateAll(verbose) {
+  const config = getConfig();
+  const skills = config.installedSkills || {};
+  console.log('Updating all skills...');
+  let hasErrors = false;
+  for (const skillName of Object.keys(skills)) {
+    try {
+      await updateSingleSkill(skillName, verbose);
+    } catch (err) {
+      console.error(`Failed to update ${skillName}: ${err.message}`);
+      hasErrors = true;
+    }
+  }
+  return hasErrors ? 1 : 0;
 }
 
 async function updateSingleSkill(name, verbose) {

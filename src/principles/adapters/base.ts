@@ -44,7 +44,7 @@ export abstract class BaseAdapter implements Adapter {
 
   protected readFileContent(filePath: string): string {
     try {
-      return readFileSync(filePath, 'utf-8');
+      return readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
     } catch {
       throw new Error(`Could not read file: ${filePath}`);
     }

@@ -1,10 +1,11 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const { checkDeps } = require('./detect-deps.js');
 
-const CONFIG_DIR = path.join(process.env.HOME, '.config', 'xp-gate');
+const CONFIG_DIR = path.join(os.homedir(), '.config', 'xp-gate');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'xp-gate.json');
-const TEMPLATE_DIR = path.join(process.env.HOME, '.config', 'opencode', 'git-hooks-template');
+const TEMPLATE_DIR = path.join(os.homedir(), '.config', 'opencode', 'git-hooks-template');
 
 async function init(args) {
   console.log('XP-Gate Initialization');
@@ -45,41 +46,10 @@ async function init(args) {
   
   console.log('Installing hooks...');
   
-  const srcDir = path.dirname(__dirname);
-  const hooks = ['pre-commit', 'pre-push'];
-  
-  for (const hook of hooks) {
-    const src = path.join(srcDir, 'hooks', hook);
-    const dest = path.join(hooksDir, hook);
-    
-    if (fs.existsSync(src)) {
-      fs.copyFileSync(src, dest);
-      fs.chmodSync(dest, 0o755);
-      console.log(`  ${hook} -> ${hooksDir}`);
-    }
-  }
-  
-  const adaptersDir = path.join(projectRoot, 'githooks', 'adapters');
-  fs.mkdirSync(adaptersDir, { recursive: true });
-  
-  const adapterSrc = path.join(srcDir, 'adapter-common.sh');
-  if (fs.existsSync(adapterSrc)) {
-    fs.copyFileSync(adapterSrc, path.join(projectRoot, 'githooks', 'adapter-common.sh'));
-    console.log(`  adapter-common.sh -> ${projectRoot}/githooks/`);
-  }
-  
+  installHooks(hooksDir);
+  installAdapters(projectRoot);
   if (templateChoice) {
-    fs.mkdirSync(TEMPLATE_DIR, { recursive: true });
-    for (const hook of hooks) {
-      const src = path.join(srcDir, 'hooks', hook);
-      const dest = path.join(TEMPLATE_DIR, hook);
-      if (fs.existsSync(src)) {
-        fs.copyFileSync(src, dest);
-        fs.chmodSync(dest, 0o755);
-        console.log(`  ${hook} -> ${TEMPLATE_DIR}`);
-      }
-    }
-    fs.mkdirSync(path.join(TEMPLATE_DIR, 'adapters'), { recursive: true });
+    installTemplate();
   }
   
   ensureConfigDir();
@@ -89,6 +59,47 @@ async function init(args) {
   console.log('Run git commit to trigger quality gates');
   
   return 0;
+}
+
+function installHooks(hooksDir) {
+  const srcDir = path.dirname(__dirname);
+  const hooks = ['pre-commit', 'pre-push'];
+  for (const hook of hooks) {
+    const src = path.join(srcDir, 'hooks', hook);
+    const dest = path.join(hooksDir, hook);
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, dest);
+      fs.chmodSync(dest, 0o755);
+      console.log(`  ${hook} -> ${hooksDir}`);
+    }
+  }
+}
+
+function installAdapters(projectRoot) {
+  const srcDir = path.dirname(__dirname);
+  const adaptersDir = path.join(projectRoot, 'githooks', 'adapters');
+  fs.mkdirSync(adaptersDir, { recursive: true });
+  const adapterSrc = path.join(srcDir, 'adapter-common.sh');
+  if (fs.existsSync(adapterSrc)) {
+    fs.copyFileSync(adapterSrc, path.join(projectRoot, 'githooks', 'adapter-common.sh'));
+    console.log(`  adapter-common.sh -> ${projectRoot}/githooks/`);
+  }
+}
+
+function installTemplate() {
+  const srcDir = path.dirname(__dirname);
+  const hooks = ['pre-commit', 'pre-push'];
+  fs.mkdirSync(TEMPLATE_DIR, { recursive: true });
+  for (const hook of hooks) {
+    const src = path.join(srcDir, 'hooks', hook);
+    const dest = path.join(TEMPLATE_DIR, hook);
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, dest);
+      fs.chmodSync(dest, 0o755);
+      console.log(`  ${hook} -> ${TEMPLATE_DIR}`);
+    }
+  }
+  fs.mkdirSync(path.join(TEMPLATE_DIR, 'adapters'), { recursive: true });
 }
 
 function getGitDir() {

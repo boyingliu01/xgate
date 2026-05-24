@@ -56,7 +56,7 @@ export async function detectAITestCharacteristics(
 ): Promise<AITestDetectionResult> {
   let content: string;
   try {
-    content = await fs.readFile(testFilePath, 'utf-8');
+    content = (await fs.readFile(testFilePath, 'utf-8')).replace(/\r\n/g, '\n');
   } catch {
     return {
       isAiGenerated: false,
