@@ -19,6 +19,11 @@ const MOCK_KEYWORDS = [
   'mockReset',
   'mockClear',
   'mockRestore',
+  'unittest.mock',
+  'MagicMock',
+  'patch(',
+  'mock_open',
+  'Mock(',
 ];
 
 const AI_GENERATED_DENSITY_THRESHOLD = 30;
@@ -61,6 +66,7 @@ export async function detectAITestCharacteristics(
     return {
       isAiGenerated: false,
       mockDensity: 0,
+      hasMockJustified: false,
       annotations: { hasTest: false, hasIntent: false, hasCovers: false }
     };
   }
@@ -73,6 +79,7 @@ export async function detectAITestCharacteristics(
   const hasTest = /@test\s+/i.test(content);
   const hasIntent = /@intent\s+/i.test(content);
   const hasCovers = /@covers\s+/i.test(content);
+  const hasMockJustified = /@mock-justified\s*:\s*.{10,}/i.test(content);
 
   const mockCount = countMockReferences(content);
   const testLines = countTestLines(content);
@@ -84,6 +91,7 @@ export async function detectAITestCharacteristics(
     isAiGenerated,
     mockDensity: Math.round(mockDensity * 100) / 100,
     explicitThreshold,
+    hasMockJustified,
     annotations: { hasTest, hasIntent, hasCovers }
   };
 }

@@ -6,5 +6,9 @@
   "src/principles/rules/__tests__/solid/dip.test.ts": {
     "totalWarnings": 0,
     "lastAnalyzed": "2026-05-03T17:25:34.954Z"
+  },
+  "src/mutation/types.ts": {
+    "totalWarnings": 1,
+    "lastAnalyzed": "2026-05-25T05:41:38.511Z"
   }
 }
