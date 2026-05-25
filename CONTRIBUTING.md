@@ -92,6 +92,12 @@ describe('Feature', () => {
 });
 ```
 
+### Mock Strategy
+- **Integration-first**: Prefer real DB, real collaborators, tmpdir for I/O
+- **Mocks ONLY for**: external services, network calls, time-dependent code, non-deterministic behavior
+- **Mock density > 30%**: Add `// @mock-justified: <reason>` annotation (reason min 10 chars)
+- **Pre-push Gate M2**: Mock density > 50% without justification BLOCKS push
+
 ### Anti-Patterns (NEVER)
 - `as any`, `@ts-ignore`, `@ts-expect-error`
 - Empty catch blocks

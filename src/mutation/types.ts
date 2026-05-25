@@ -49,6 +49,7 @@ export interface AITestDetectionResult {
   isAiGenerated: boolean;
   mockDensity: number;
   explicitThreshold?: number;
+  hasMockJustified: boolean;
   annotations: {
     hasTest: boolean;
     hasIntent: boolean;
