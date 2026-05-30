@@ -4,6 +4,7 @@ const { installSkill } = require('../lib/install-skill.js');
 const { updateSkill } = require('../lib/update-skill.js');
 const { uninstallSkill } = require('../lib/uninstall-skill.js');
 const { uninstall } = require('../lib/uninstall.js');
+const { doctor } = require('../lib/doctor.js');
 const { checkDeps } = require('../lib/detect-deps.js');
 
 const COMMANDS = {
@@ -36,6 +37,11 @@ const COMMANDS = {
     description: 'Uninstall xp-gate (reverse of init)',
     fn: uninstall,
     usage: 'xp-gate uninstall [--dry-run] [--force] [--local|--global]'
+  },
+  'doctor': {
+    description: 'Diagnose xp-gate installation health',
+    fn: doctor,
+    usage: 'xp-gate doctor [--fix]'
   }
 };
 
@@ -112,6 +118,11 @@ function main() {
   
   if (command === 'uninstall') {
     uninstall(subargs).then(code => process.exit(code));
+    return;
+  }
+  
+  if (command === 'doctor') {
+    doctor(subargs).then(code => process.exit(code));
     return;
   }
   
