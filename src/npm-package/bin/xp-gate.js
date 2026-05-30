@@ -6,6 +6,7 @@ const { uninstallSkill } = require('../lib/uninstall-skill.js');
 const { uninstall } = require('../lib/uninstall.js');
 const { doctor } = require('../lib/doctor.js');
 const { checkDeps } = require('../lib/detect-deps.js');
+const { migrate } = require('../lib/migrate.js');
 
 const COMMANDS = {
   'init': {
@@ -37,6 +38,11 @@ const COMMANDS = {
     description: 'Uninstall xp-gate (reverse of init)',
     fn: uninstall,
     usage: 'xp-gate uninstall [--dry-run] [--force] [--local|--global]'
+  },
+  'migrate': {
+    description: 'Migrate from v0.4.x (GitHub Packages) to v0.5.x (public npm)',
+    fn: migrate,
+    usage: 'xp-gate migrate [--dry-run]'
   },
   'doctor': {
     description: 'Diagnose xp-gate installation health',
@@ -118,6 +124,11 @@ function main() {
   
   if (command === 'uninstall') {
     uninstall(subargs).then(code => process.exit(code));
+    return;
+  }
+
+  if (command === 'migrate') {
+    migrate(subargs).then(code => process.exit(code));
     return;
   }
   
