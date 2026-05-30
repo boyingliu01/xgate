@@ -128,10 +128,56 @@ function isXpGateFile(filePath, signature) {
 
 - 每个删除操作前验证文件归属
 - 特征不匹配 → 跳过 + warning（不阻断其他清理）
-- AGENTS.md **不碰**
-- `~/.config/opencode/skills/` 保留（用户数据）
-- `~/.config/xp-gate/cache/` 保留（可被 doctor 清理）
 - 不存在的文件/目录 → skip + info message
+
+### 4.7 文件清理策略（三分类）
+
+| 类别 | 策略 | 文件列表 |
+|------|------|---------|
+| **必须清理** | 由 xp-gate init 独占创建，直接删除 | hooks (pre-commit/pre-push), adapters, git-hooks-template/, ~/.config/xp-gate/hooks/, ~/.config/xp-gate/adapters/ |
+| **询问清理** | 可能与用户数据混合，提示后由用户决定 | AGENTS.md (注入的 Karpathy Principles section), .principlesrc, architecture.yaml, specification.yaml, .warnings-baseline.json |
+| **保留不动** | 用户数据 | ~/.config/opencode/skills/, ~/.config/xp-gate/cache/ |
+
+**默认行为**: uninstall 只执行"必须清理"类别。"询问清理"类别在卸载摘要中列出，提示用户手动处理。
+
+### 4.8 xp-gate.json 状态机
+
+```
+active → uninstalling → uninstalled
+  │            │
+  │            └── 卸载失败 → active（可重试，doctor 可诊断）
+  │
+  └── 完整卸载 → mode: "uninstalled", uninstalled: "ISO8601"
+```
+
+- `doctor` 只在 `mode === "active"` 时执行诊断/修复
+- `mode === "uninstalled"` 时 doctor 输出 "xp-gate is not installed"
+- uninstall 设置 `mode` 为 `"uninstalling"` 开始，成功时转为 `"uninstalled"`
+- 中途失败保持 `"uninstalling"` → 下次 uninstall 可恢复（幂等）
+
+### 4.9 init.js 架构审计
+
+**审计结论**: `init.js` (235 lines) 不生成 manifest 文件，不记录安装的文件列表或校验和。uninstall 必须依赖"特征字符串检测"作为文件归属判定的**唯一方式**。
+
+| init.js 副作用 | uninstall 反向操作 |
+|---|---|
+| `copyHooks()` → .git/hooks/ (local) | 签名验证后删除 |
+| `copyAdapters()` → githooks/ + TEMPLATE_DIR | 签名验证后删除 |
+| `updateConfig({mode, lastInit})` | updateConfig({mode:"uninstalled", uninstalled}) |
+| `injectKarpathyPrinciples()` → AGENTS.md | 保留(询问清理) |
+| `git config --global core.hooksPath` (global) | unset (值匹配时) |
+
+**已知局限**: 由于无 manifest，uninstall 是"尽最大努力"策略 — 通过特征字符串检测来判定文件归属。如果用户手动修改了 hook 文件但保留了特征字符串，仍会被识别为 xp-gate 文件。如文件特征字符串不匹配，跳过并输出 warning。
+
+### 4.10 global 模式 core.hooksPath 恢复
+
+`init.js` global 模式直接覆写 `core.hooksPath`，不保存旧值。修复策略：
+- **uninstall.js 实现时**: 在 uninstall 执行前读取当前 `core.hooksPath` 值
+- 如果值匹配 `~/.config/xp-gate/hooks/` → unset
+- 如果值不匹配 → skip + warn（用户可能手动改过）
+- 如果 init 时旧值非空(future enhancement): 在 `xp-gate.json` 中增加 `previousHooksPath` 字段
+
+**Sprint-2 范围**: 暂不修改 init.js（Karpathy 原则 3: Surgical Changes）。uninstall 仅做 unset，不尝试恢复旧值。恢复旧值的需求记录为 future enhancement。
 
 ---
 
@@ -217,6 +263,10 @@ REQ-4 (docs)       ← 依赖 REQ-1,2,3 全部完成
 | AC-05 | `xp-gate doctor` 正确诊断健康/损坏状态 | 测试：完整安装 → doctor → 输出包含所有 checks ✅ |
 | AC-06 | `xp-gate migrate` 清理 ~/.npmrc 中的 PAT 行 | 测试：mock ~/.npmrc → migrate --dry-run → 验证 |
 | AC-07 | 文档与实现一致 | 手动验证 README/CHANGELOG |
+| AC-08 | 卸载中途失败后 `xp-gate doctor` 可检测不完整状态 | mock 权限错误 → uninstall → doctor 输出包含 partial uninstall 信息 |
+| AC-09 | 已卸载状态下再次 `uninstall` 输出干净信息（幂等） | uninstall 两次 → 第二次输出 "No xp-gate installation found" |
+| AC-10 | `doctor --fix` 仅在 mode === "active" 时执行修复 | 设置 mode=uninstalled → doctor --fix → 不执行修复操作 |
+| AC-11 | Manifest 存在时 uninstall 使用 sha256 而非仅特征字符串 | init → 修改 manifest sha256 → uninstall --dry-run → 显示 fallback 到 signature 检测 |
 
 ---
 
@@ -230,4 +280,78 @@ REQ-4 (docs)       ← 依赖 REQ-1,2,3 全部完成
 
 ---
 
-**Status**: Phase 0 APPROVED → 进入 Phase 1 PLAN
+### 4.11 Manifest 文件机制
+
+**问题**: Delphi Round 1 两位专家（Architecture + Implementation）独立指出：`init.js` 不生成文件清单，导致 `uninstall` 和 `doctor` 都只能"猜测"哪些文件属于 xp-gate。特征字符串检测虽好，但不完整。
+
+**解决方案**: 在 `init.js` 中新增 manifest 生成，在 `uninstall.js`/`doctor.js` 中优先使用 manifest。
+
+**manifest 格式** (`~/.config/xp-gate/xp-gate.json` 中新增 `manifest` 字段):
+```json
+{
+  "manifest": {
+    "version": 1,
+    "files": {
+      ".git/hooks/pre-commit": {"sha256": "abc123...", "size": 1781},
+      ".git/hooks/pre-push": {"sha256": "def456...", "size": 395},
+      "githooks/adapter-common.sh": {"sha256": "...", "size": 192},
+      "githooks/adapters/adapter-typescript.sh": {"sha256": "...", "size": 456}
+    },
+    "gitConfig": {
+      "core.hooksPath": "~/.config/xp-gate/hooks/"
+    },
+    "templateDir": "~/.config/opencode/git-hooks-template/",
+    "injectedSections": {
+      "AGENTS.md": "## AI CODING DISCIPLINE (Karpathy Principles)"
+    }
+  }
+}
+```
+
+**验证策略（两级 fallback）**:
+1. **优先**: 读取 manifest → 校验 sha256 → 匹配则确认归属
+2. **Fallback**: manifest 不存在或 sha256 不匹配时 → 使用特征字符串检测（§4.5）
+3. **未知文件**: 两种验证都失败 → skip + warn
+
+**init.js 修改范围**（最小化）:
+- `installLocal()` 和 `setupGlobal()` 在操作完成后调用 `updateConfig({ manifest })` 
+- 不影响现有逻辑结构，仅追加 manifest 写入
+- Karpathy 原则 3: 仅触碰 init.js 的必要行，不重构
+
+### 4.12 回滚机制
+
+**部分失败保护**:
+1. 执行前：将 Plan 中所有待删除文件快照拷贝到 `~/.config/xp-gate/.uninstall-backup/`
+2. 按顺序执行删除操作（非破坏性 check 先，破坏性 delete 后）
+3. 任一失败：停止后续操作，保留已执行结果
+4. 再次运行 `xp-gate uninstall` 可恢复（幂等，已删除的文件 skip）
+
+**操作顺序**:
+```
+1. 读取 config/building plan  （无破坏）
+2. 打印 plan / 确认           （无破坏）
+3. updateConfig mode→uninstalling （非破坏）
+4. 创建 backup snapshot       （非破坏）
+5. unset core.hooksPath       （可逆 git config）
+6. 删除 template/             （开始破坏性操作）
+7. 删除 adapters/             
+8. 删除 hooks/                
+9. 删除 githooks/             
+10. updateConfig mode→uninstalled （标记完成）
+11. 删除 backup               
+```
+
+### 4.13 doctor --fix 作用域
+
+`doctor --fix` 仅在 `mode === "active"` 时执行修复。修复范围（枚举）:
+| 诊断项 | --fix 行为 |
+|--------|-----------|
+| xp-gate.json 损坏/缺失 | ❌ 不修复（不可自动恢复）|
+| hooks 缺失 | ✅ 从 npm 包内模板重装 |
+| adapters 缺失 | ✅ 从 npm 包内模板重装 |
+| core.hooksPath 错误 | ✅ 修正为 xp-gate 路径 |
+| 环境依赖缺失 | ❌ 不修复（需用户手动安装 Node/Git/Bash）|
+
+---
+
+**Status**: Delphi Round 1 REQUEST_CHANGES → 修复完成 → 请求 Round 2 重审
