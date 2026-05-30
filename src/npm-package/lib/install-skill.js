@@ -7,6 +7,7 @@ const { execSync } = require('child_process');
 const { checkDeps } = require('./detect-deps.js');
 const { downloadFromGitHub } = require('./download-skill.js');
 const { rollback } = require('./rollback.js');
+const { copyDirRecursive } = require('./file-utils.js');
 
 const HOME = process.env.HOME || process.env.USERPROFILE || os.homedir();
 
@@ -178,22 +179,6 @@ async function downloadFile(url, dest, verbose) {
       reject(err);
     });
   });
-}
-
-function copyDirRecursive(src, dest) {
-  fs.mkdirSync(dest, { recursive: true });
-  const entries = fs.readdirSync(src, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-
-    if (entry.isDirectory()) {
-      copyDirRecursive(srcPath, destPath);
-    } else {
-      fs.copyFileSync(srcPath, destPath);
-    }
-  }
 }
 
 function ensureConfigDir() {
