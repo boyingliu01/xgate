@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **REQ-5: Windows 兼容验证** — CI matrix 添加 windows-latest runner，验证 npm install -g + xp-gate init + 首次 commit 触发 6 道质量门禁，Node 18/20/22 LTS 全部通过，npm 包 tarball 大小 < 2MB 守护，README 明确 Git Bash 前置条件
+
 ## [0.4.1.0] - 2026-05-30
 
 ### Fixed
