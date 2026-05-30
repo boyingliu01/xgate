@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 ### BREAKING CHANGES
 - **#86**: Removed `prepare` and `postinstall` scripts from npm-package. Version sync moved to `version` script (only fires on `npm version` bump in dev environment). This fixes `exit 127` failures during global install caused by the broken `bash ../../scripts/sync-version.sh` relative path inside an installed tarball.
 
+### Added
+- **#89: npm-publish CI workflow** — `.github/workflows/npm-publish.yml` triggers on `VERSION` file push to `main`. Uses npm OIDC trusted publisher with `--provenance` and `id-token: write` permission. Includes tarball size guard (≤2MB), duplicate version detection, and fail-loud publish.
+
 ## [0.4.1.0] - 2026-05-30
 
 ### Fixed

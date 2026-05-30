@@ -133,6 +133,31 @@ description: Brief description
 ...
 ```
 
+## NPM Publish (OIDC Trusted Publisher)
+
+The project uses npm's **Trusted Publishers** feature for OIDC-based publishing.
+Before the first automated publish, a maintainer must complete one-time setup:
+
+### One-Time Setup (Maintainer Only)
+
+1. Go to [npmjs.com](https://www.npmjs.com/) → package **xp-gate** → **Settings** → **Trusted Publishers**
+2. Add a new Trusted Publisher with:
+   - **Repository**: `boyingliu01/xp-gate`
+   - **Branch**: `main`
+   - **Workflow**: `npm-publish.yml`
+3. Add `NPM_TOKEN` as a GitHub repository secret:
+   - Go to repository **Settings** → **Secrets and variables** → **Actions**
+   - Create secret `NPM_TOKEN` (type: **Automation** — this bypasses 2FA for OIDC)
+
+After setup, pushing a change to the `VERSION` file on `main` will automatically trigger `npm publish --provenance`.
+
+### How It Works
+
+- Trigger: push to `main` that modifies the `VERSION` file
+- Provenance: `npm publish --provenance` publishes with npm provenance attestation
+- Size guard: tarball must be under 2MB
+- Duplicate protection: fails if the version already exists on npm
+
 ## Questions?
 
 Open an issue or discussion on GitHub.
