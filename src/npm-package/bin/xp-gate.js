@@ -3,6 +3,7 @@ const { init } = require('../lib/init.js');
 const { installSkill } = require('../lib/install-skill.js');
 const { updateSkill } = require('../lib/update-skill.js');
 const { uninstallSkill } = require('../lib/uninstall-skill.js');
+const { uninstall } = require('../lib/uninstall.js');
 const { checkDeps } = require('../lib/detect-deps.js');
 
 const COMMANDS = {
@@ -30,6 +31,11 @@ const COMMANDS = {
     description: 'Uninstall a xp-gate skill',
     fn: uninstallSkill,
     usage: 'xp-gate uninstall-skill <name> [--force]'
+  },
+  'uninstall': {
+    description: 'Uninstall xp-gate (reverse of init)',
+    fn: uninstall,
+    usage: 'xp-gate uninstall [--dry-run] [--force] [--local|--global]'
   }
 };
 
@@ -101,6 +107,11 @@ function main() {
     }
     const options = parseOptions(subargs.slice(1));
     uninstallSkill(name, options).then(code => process.exit(code));
+    return;
+  }
+  
+  if (command === 'uninstall') {
+    uninstall(subargs).then(code => process.exit(code));
     return;
   }
   
