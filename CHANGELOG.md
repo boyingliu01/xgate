@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### BREAKING CHANGES
+- **#86**: Removed `prepare` and `postinstall` scripts from npm-package. Version sync moved to `version` script (only fires on `npm version` bump in dev environment). This fixes `exit 127` failures during global install caused by the broken `bash ../../scripts/sync-version.sh` relative path inside an installed tarball.
+
 ## [0.4.1.0] - 2026-05-30
 
 ### Fixed
