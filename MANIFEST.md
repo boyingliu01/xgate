@@ -28,6 +28,9 @@ components:
     install_command: "npm install -g xp-gate"
     subcommands:
       - "xp-gate init"
+      - "xp-gate uninstall"
+      - "xp-gate doctor"
+      - "xp-gate migrate"
       - "xp-gate install-skill <name>"
       - "xp-gate update-skill <name>"
       - "xp-gate uninstall-skill <name> --force"

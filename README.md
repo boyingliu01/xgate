@@ -258,6 +258,9 @@ bash scripts/install-all.sh
 | 命令 | 说明 |
 |------|------|
 | `xp-gate init` | 初始化项目，安装 hooks + adapters |
+| `xp-gate uninstall` | 完整卸载 xp-gate（反向操作 init），支持 --dry-run --force --local --global |
+| `xp-gate doctor` | 诊断安装状态（config/hooks/adapters/env），支持 --fix 自动修复 |
+| `xp-gate migrate` | 迁移助手：从 v0.4.x (GitHub Packages) 清理残留配置 |
 | `xp-gate install-skill <name>` | 从 GitHub 下载并安装 Skill |
 | `xp-gate update-skill <name>` | 更新已安装的 Skill |
 | `xp-gate uninstall-skill <name> --force` | 卸载 Skill |
