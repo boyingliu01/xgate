@@ -10,6 +10,8 @@
     "hooks/",
     "adapters/",
     "lib/",
+    "skills/",
+    "plugins/",
     "adapter-common.sh"
   ],
   "repository": {
@@ -22,6 +24,7 @@
   "scripts": {
     "prepare": "bash ../../scripts/sync-version.sh",
     "postinstall": "bash ../../scripts/sync-version.sh",
+    "prepack": "node scripts/sync-package-content.js",
     "test": "echo \"Run tests\" && exit 0"
   },
   "keywords": [
