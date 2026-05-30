@@ -10,7 +10,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **plugins/claude-code/bin/delphi-review-guard.sh** — PreToolUse Hook 守卫脚本，检查 .sprint-state/delphi-reviewed.json，不支持 jq 时优雅降级
+
+### Changed
 - **middleware.md 状态机增强** — 添加 DELPHI-GATE + Phase 5 硬门禁转换规则（"永远不可自动跳过"）
+- **README.md** — 新增 v0.4.x → v0.5.x 迁移指南，移除 GitHub PAT 认证步骤，安装流程简化为 `npm install -g xp-gate`
+- **MANIFEST.md** — 7 个 `bash <(curl ...)` 安装命令标注为 "LEGACY - GHP version only"
+- **CHANGELOG.md** — 补充 REQ-6 迁移相关变更记录
 
 ## [0.3.2.0] - 2026-05-28
 
