@@ -87,3 +87,8 @@ plugins/**/*.lock
 plugins/**/*.js.map
 plugins/opencode/dist/
 plugins/opencode/node_modules/
+
+# npm-package synthesized content (sync'd from repo root by prepack)
+src/npm-package/skills/
+src/npm-package/plugins/
+src/npm-package/*.tgz

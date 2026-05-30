@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### BREAKING CHANGES
+- **#86**: Removed `prepare` and `postinstall` scripts from npm-package. Version sync moved to `version` script (only fires on `npm version` bump in dev environment). This fixes `exit 127` failures during global install caused by the broken `bash ../../scripts/sync-version.sh` relative path inside an installed tarball.
+
+### Added
+- **#89: npm-publish CI workflow** — `.github/workflows/npm-publish.yml` triggers on `VERSION` file push to `main`. Uses npm OIDC trusted publisher with `--provenance` and `id-token: write` permission. Includes tarball size guard (≤2MB), duplicate version detection, and fail-loud publish.
+
+### Known Limitations
+- **No `xp-gate uninstall` command**: This version does not include a proper uninstall command. Users must manually remove files. See [Manual Uninstall](#手动卸载) section in README for exact steps. Full uninstall CLI planned for v0.6.0.
+- **Manual .npmrc cleanup required**: Existing GitHub Packages users must manually remove the old `//npm.pkg.github.com/:_authToken=` line from `~/.npmrc` before installing. See [Migration Guide](#迁移指南-v04x--v05x) below.
+
 ## [0.4.1.0] - 2026-05-30
 
 ### Fixed

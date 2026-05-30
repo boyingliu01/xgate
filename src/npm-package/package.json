@@ -10,21 +10,20 @@
     "hooks/",
     "adapters/",
     "lib/",
+    "skills/",
+    "plugins/",
     "adapter-common.sh"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/boyingliu01/xp-gate"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
-    "prepare": "bash ../../scripts/sync-version.sh",
-    "postinstall": "bash ../../scripts/sync-version.sh",
+    "version": "bash ../../scripts/sync-version.sh && git add ../../VERSION 2>/dev/null || true",
+    "prepack": "node scripts/sync-package-content.js",
     "test": "echo \"Run tests\" && exit 0"
   },
   "keywords": [

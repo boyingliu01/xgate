@@ -19,7 +19,7 @@ const COMMANDS = {
   'install-skill': {
     description: 'Install a xp-gate skill from GitHub',
     fn: installSkill,
-    usage: 'xp-gate install-skill <name>[@<version>] [--offline] [--verbose] [--force]'
+    usage: 'xp-gate install-skill <name>[@<version>] [--offline] [--remote] [--verbose] [--force]'
   },
   'update-skill': {
     description: 'Update installed skill(s)',
@@ -110,13 +110,14 @@ function main() {
 }
 
 function parseOptions(args) {
-  const options = { offline: false, verbose: false, force: false, all: false, check: false };
+  const options = { offline: false, verbose: false, force: false, all: false, check: false, remote: false };
   for (const arg of args) {
     if (arg === '--offline') options.offline = true;
     if (arg === '--verbose') options.verbose = true;
     if (arg === '--force') options.force = true;
     if (arg === '--all') options.all = true;
     if (arg === '--check') options.check = true;
+    if (arg === '--remote') options.remote = true;
   }
   return options;
 }
