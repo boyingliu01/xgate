@@ -16,9 +16,6 @@
     "type": "git",
     "url": "https://github.com/boyingliu01/xp-gate"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "engines": {
     "node": ">=18.0.0"
   },
