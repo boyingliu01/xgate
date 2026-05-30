@@ -19,8 +19,9 @@
 6. [质量门禁详解](#质量门禁详解)
 7. [AI 技能集成](#ai-技能集成)
 8. [配置说明](#配置说明)
-9. [贡献指南](#贡献指南)
-10. [许可证](#许可证)
+9. [手动卸载](#手动卸载)
+10. [贡献指南](#贡献指南)
+11. [许可证](#许可证)
 
 ---
 
@@ -596,6 +597,83 @@ git push
 # 查看增量变异报告
 npm run mutation:incremental -- --changed-files "src/foo.ts,src/bar.ts"
 ```
+
+---
+
+## 手动卸载
+
+> **注意**：`xp-gate uninstall` CLI 命令推迟到 Sprint-2 版本。在此之前，请按以下步骤手动清理。
+
+### 步骤 1: 卸载 npm 包
+
+```bash
+npm uninstall -g xp-gate
+```
+
+### 步骤 2: 清理全局配置和缓存
+
+需要删除的目录：
+
+```bash
+# 全局配置
+rm -rf ~/.config/xp-gate/
+
+# 全局 skill 文件（仅清理 xp-gate 安装的 core skills）
+rm -rf ~/.config/opencode/skills/sprint-flow/
+rm -rf ~/.config/opencode/skills/delphi-review/
+rm -rf ~/.config/opencode/skills/test-specification-alignment/
+rm -rf ~/.config/opencode/skills/ralph-loop/
+```
+
+> ⚠️ **不要删除** `~/.config/opencode/skills/` 中其他工具安装的 skill，例如 brainstorming、investigate 等来自其他来源的 skill。
+
+### 步骤 3: 清理当前项目的 Git Hooks
+
+如果使用了 `xp-gate init`（per-project 模式）：
+
+```bash
+# 在项目根目录执行
+rm -f .git/hooks/pre-commit
+rm -f .git/hooks/pre-push
+rm -rf githooks/   # 仅在 xp-gate init 创建了此目录时
+```
+
+如果使用了 `xp-gate init --global` 模式：
+
+```bash
+# 清除全局 hooks 配置
+git config --global --unset core.hooksPath
+```
+
+### 步骤 4: Windows PowerShell 等价命令
+
+```powershell
+# 步骤 1
+npm uninstall -g xp-gate
+
+# 步骤 2
+Remove-Item -Recurse -Force "$env:USERPROFILE\.config\xp-gate" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.config\opencode\skills\sprint-flow" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.config\opencode\skills\delphi-review" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.config\opencode\skills\test-specification-alignment" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.config\opencode\skills\ralph-loop" -ErrorAction SilentlyContinue
+
+# 步骤 3
+Remove-Item -Force ".git\hooks\pre-commit" -ErrorAction SilentlyContinue
+Remove-Item -Force ".git\hooks\pre-push" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "githooks" -ErrorAction SilentlyContinue
+```
+
+### ⚠️ 请勿删除的文件（用户历史数据）
+
+以下文件包含您项目的历史数据，xp-gate 的卸载流程**不应触碰**它们：
+
+| 文件 | 内容 | 影响 |
+|------|------|------|
+| `.quality-history.jsonl` | 历次提交的质量评分记录 | 卸载后如果重装，会丢失历史趋势数据 |
+| `.warnings-baseline.json` | 童子军规则警告基线 | 重装后所有警告会被视为"新增"，影响门禁判断 |
+
+如果完全确定不再使用 xp-gate，且希望彻底清除所有数据，可以手动删除这些文件 — 但请知晓这是不可逆操作。
 
 ---
 
